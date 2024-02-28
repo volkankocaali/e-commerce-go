@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  mysql:
+    container_name: e-commerce-go-mysql
+    networks:
+      - shared
+    image: mysql:latest
+    restart: on-failure
+    environment:
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+    ports:
+      - "127.0.0.1:3304:3306"
+      - "33060:33060"
+    volumes:
+      - ./build/mysql:/var/lib/mysql
+      - ./build/docker/mysql/init:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    container_name: e-commerce-go-redis
+    image: redis:latest
+    networks:
+      - shared
+    restart: on-failure
+    ports:
+      - "127.0.0.1:6379:6379"
+      - "16379:16379"
+
+  rabbitmq:
+    container_name: e-commerce-go-rabbitmq
+    networks:
+      - shared
+    image: rabbitmq:management
+    restart: on-failure
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.6.0-arm64
+    user: root
+    networks:
+      - shared
+    volumes:
+      - ./filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./fiber_logs.json:/usr/share/filebeat/fiber_logs.json
+    depends_on:
+      - logstash
+      - elasticsearch
+      - kibana
+    command: >
+      bash -c "
+        sleep 30 &&
+        filebeat -e -c /usr/share/filebeat/filebeat.yml
+      "
+
+  mongo:
+    container_name: e-commerce-go-mongo
+    networks:
+      - shared
+    image: mongo:latest
+    restart: on-failure
+    ports:
+      - "127.0.0.1:27019:27017"
+      - "27018:27018"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2-arm64
+    networks:
+      - shared
+    restart: on-failure
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --silent --fail localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.2-arm64
+    ports:
+      - "5044:5044"
+    networks:
+      - shared
+    volumes:
+      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.2-arm64
+    networks:
+      - shared
+    restart: on-failure
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - XPACK_SECURITY_ENABLED=false
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+networks:
+  shared:
+    driver: bridge
+
+volumes:
+  elasticsearch_data:
+    driver: local
