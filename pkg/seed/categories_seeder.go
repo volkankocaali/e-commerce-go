@@ -66,11 +66,11 @@ func (c CategoriesSeeder) Seed() error {
 }
 
 func capitalizeWords(input string) string {
-	words := strings.Fields(input) // String'i boşluklara göre böler
+	words := strings.Fields(input)
 
 	for i, word := range words {
-		words[i] = strings.Title(word) // Her kelimenin baş harfini büyük yapar
+		words[i] = strings.Title(word)
 	}
 
-	return strings.Join(words, " ") // Kelimeleri tekrar birleştirir
+	return strings.Join(words, " ")
 }

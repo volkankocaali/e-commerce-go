@@ -7,43 +7,19 @@ import (
 	"log"
 )
 
-func NewAmqpClient(cfg config.Config) (*amqp.Connection, error) {
-	amqpUrl := fmt.Sprintf("amqp://%s:%s@%s:%s/", cfg.RabbitMQUser, cfg.RabbitMQPassword, cfg.RabbitMQHost, cfg.RabbitMQPort)
-	conn, err := amqp.Dial(amqpUrl)
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
-
-	ch, err := conn.Channel()
-	failOnError(err, "Kanal açılamadı")
-	defer ch.Close()
-
-	q, err := ch.QueueDeclare(
-		"logQueue", // Kuyruk adı
-		true,       // Durable
-		false,      // Delete when unused
-		false,      // Exclusive
-		false,      // No-wait
-		nil,        // Arguments
+func NewAMQPClient(cfg config.Config) (*amqp.Connection, error) {
+	amqpURL := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		cfg.RabbitMQUser,
+		cfg.RabbitMQPassword,
+		cfg.RabbitMQHost,
+		cfg.RabbitMQPort,
 	)
-	failOnError(err, "Kuyruk oluşturulamadı")
 
-	logMessage := "Bu bir test log mesajıdır"
-	err = ch.Publish(
-		"",     // Exchange
-		q.Name, // Routing key
-		false,  // Mandatory
-		false,  // Immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(logMessage),
-		})
-	failOnError(err, "Log RabbitMQ'ya gönderilemedi")
-	log.Printf("Gönderilen log mesajı: %s", logMessage)
-	return conn, nil
-}
-
-func failOnError(err error, msg string) {
+	conn, err := amqp.Dial(amqpURL)
 	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
+		log.Printf("Failed to connect to RabbitMQ: %s", err)
+		return nil, err
 	}
+
+	return conn, nil
 }

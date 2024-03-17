@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/streadway/amqp"
 	"github.com/volkankocaali/e-commorce-go/cmd/e-commerce/middleware"
 	"github.com/volkankocaali/e-commorce-go/pkg/api/handler"
 	"github.com/volkankocaali/e-commorce-go/pkg/config"
@@ -10,18 +11,20 @@ import (
 	"github.com/volkankocaali/e-commorce-go/pkg/parser"
 	"github.com/volkankocaali/e-commorce-go/pkg/repository"
 	"github.com/volkankocaali/e-commorce-go/pkg/usecase"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
 /*
 rd *redis.Client,
-mg *mongo.Client,
 el *elastic.Client,
 */
 func SetupRoutes(
 	app *fiber.App,
 	cfg *config.Config,
 	db *gorm.DB,
+	amqpConn *amqp.Connection,
+	mg *mongo.Client,
 ) {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "*",
@@ -60,6 +63,11 @@ func SetupRoutes(
 
 	// Jwt Middleware for Client User
 	v1.Use(middleware.UserAuthMiddleware)
+
+	// Log Processor Middleware
+	v1.Use(func(ctx *fiber.Ctx) error {
+		return middleware.LogProcessorMiddleware(ctx, amqpConn)
+	})
 
 	// list products for user
 	v1.Get("/products", productHandler.ListProduct)

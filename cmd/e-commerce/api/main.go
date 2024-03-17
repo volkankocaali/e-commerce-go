@@ -40,10 +40,11 @@ func main() {
 	seed.CreateAndSeed()
 
 	// setup routes
-	routes.SetupRoutes(app.FiberApp, app.Config, app.DB)
+	routes.SetupRoutes(app.FiberApp, app.Config, app.DB, app.AmqpClient, app.Mongo)
 
 	// run fiber app
 	app.run()
+
 }
 
 func (app *App) initialize() {
@@ -52,12 +53,14 @@ func (app *App) initialize() {
 	redisClient, _ := database.NewRedisClient(*cfg)
 	mongoClient, _ := database.NewMongoClient(*cfg)
 	elasticClient, _ := database.NewElasticClient(*cfg)
+	amqpClient, _ := database.NewAMQPClient(*cfg)
 
 	app.Config = cfg
 	app.DB = mysql
 	app.Redis = redisClient
 	app.Mongo = mongoClient
 	app.Elastic = elasticClient
+	app.AmqpClient = amqpClient
 }
 
 func (app *App) initFiber(cfg *config.Config) *fiber.App {

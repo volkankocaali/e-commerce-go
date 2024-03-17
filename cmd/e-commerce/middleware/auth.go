@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
 	constant "github.com/volkankocaali/e-commorce-go/pkg/constant/middleware"
@@ -31,8 +30,6 @@ func UserAuthMiddleware(ctx *fiber.Ctx) error {
 	if !ok || !token.Valid {
 		return ctx.Status(http.StatusUnauthorized).JSON(fiber.Map{"error": constant.InvalidToken})
 	}
-
-	fmt.Println("claims", claims)
 
 	role, ok := claims["role"].(string)
 	if !ok || role != "client" {
