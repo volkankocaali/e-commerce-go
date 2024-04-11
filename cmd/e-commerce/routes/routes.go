@@ -44,12 +44,11 @@ func SetupRoutes(
 	userRepository := repository.NewUserRepository(db)
 	walletRepository := repository.NewWalletRepository(db)
 	productRepository := repository.NewProductRepository(db)
-	preferencesRepository := repository.NewPreferencesRepository(db)
 	categoriesRepository := repository.NewCategoriesRepository(db)
 
 	// Usecase
 	userUseCase := usecase.NewUserUseCase(userRepository, walletRepository, cfg, h)
-	productUseCase := usecase.NewProductUseCase(productRepository, categoriesRepository, preferencesRepository, cfg, h, productParser)
+	productUseCase := usecase.NewProductUseCase(productRepository, categoriesRepository, cfg, h, productParser)
 
 	// Handler
 	userHandler := handler.NewUserHandler(userUseCase)
@@ -71,7 +70,7 @@ func SetupRoutes(
 
 	// list products for user
 	v1.Get("/products", productHandler.ListProduct)
-	v1.Get("/product-detail", productHandler.ListProduct)
+	v1.Get("/product/:id", productHandler.GetProduct)
 
 	// Category
 	// -- get category

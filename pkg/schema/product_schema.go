@@ -17,25 +17,24 @@ type CategoriesResponseSchema struct {
 }
 
 type ProductResponseSchema struct {
-	ID                    uint                       `json:"id" form:"id"`
-	SKU                   string                     `json:"sku" form:"sku"`
-	ProductName           string                     `json:"product_name" form:"product_name"`
-	ImagePath             string                     `json:"image_path" form:"image_path"`
-	Size                  string                     `json:"size" form:"size"`
-	Stock                 int                        `json:"stock" form:"stock"`
-	RegularPrice          Price                      `json:"regular_price" form:"regular_price"`
-	DiscountPrice         Price                      `json:"discount_price" form:"discount_price"`
-	ShippingPrice         Price                      `json:"shipping_price" form:"shipping_price"`
-	Currency              string                     `json:"currency" form:"currency"`
-	Quantity              int                        `json:"quantity" form:"quantity"`
-	ProductNote           string                     `json:"product_note" form:"product_note"`
-	ShortDescription      string                     `json:"short_description" form:"short_description"`
-	ProductDescription    string                     `json:"product_description" form:"product_description"`
-	IsThePreferredProduct bool                       `json:"is_the_preferred_product" form:"is_the_preferred_product"`
-	CreatedAt             time.Time                  `json:"created_at" form:"created_at"`
-	UpdatedAt             time.Time                  `json:"updated_at" form:"updated_at"`
-	Categories            []CategoriesResponseSchema `json:"categories" form:"categories"`
-	Tags                  []TagsResponseSchema       `json:"tags" form:"tags"`
+	ID                 uint                       `json:"id" form:"id"`
+	SKU                string                     `json:"sku" form:"sku"`
+	ProductName        string                     `json:"product_name" form:"product_name"`
+	ImagePath          string                     `json:"image_path" form:"image_path"`
+	Size               string                     `json:"size" form:"size"`
+	Stock              int                        `json:"stock" form:"stock"`
+	RegularPrice       Price                      `json:"regular_price" form:"regular_price"`
+	DiscountPrice      Price                      `json:"discount_price" form:"discount_price"`
+	ShippingPrice      Price                      `json:"shipping_price" form:"shipping_price"`
+	Currency           string                     `json:"currency" form:"currency"`
+	Quantity           int                        `json:"quantity" form:"quantity"`
+	ProductNote        string                     `json:"product_note" form:"product_note"`
+	ShortDescription   string                     `json:"short_description" form:"short_description"`
+	ProductDescription string                     `json:"product_description" form:"product_description"`
+	CreatedAt          time.Time                  `json:"created_at" form:"created_at"`
+	UpdatedAt          time.Time                  `json:"updated_at" form:"updated_at"`
+	Categories         []CategoriesResponseSchema `json:"categories" form:"categories"`
+	Tags               []TagsResponseSchema       `json:"tags" form:"tags"`
 }
 
 type TagsResponseSchema struct {

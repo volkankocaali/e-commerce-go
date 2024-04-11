@@ -21,7 +21,6 @@ type Product struct {
 	ProductDescription string  `json:"product_description" sql:"type:text;"`
 	traits.Timestampable
 	Status      bool          `json:"status" gorm:"default:true"`
-	Preferences []Preferences `json:"preferences" gorm:"constraint:OnDelete:CASCADE"`
 	ProductTags []ProductTags `json:"product_tags" gorm:"constraint:OnDelete:CASCADE"`
 	CreatedBy   int           `json:"created_by"`
 	UpdatedBy   int           `json:"updated_by"`

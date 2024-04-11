@@ -3,17 +3,16 @@ package models
 import "github.com/volkankocaali/e-commorce-go/pkg/models/traits"
 
 type Users struct {
-	ID           uint          `json:"id" gorm:"unique;not null"`
-	Name         string        `json:"name"`
-	Email        string        `json:"email" validate:"email"`
-	Password     string        `json:"password" validate:"min=8,max=20"`
-	Phone        string        `json:"phone"`
-	Blocked      bool          `json:"blocked" gorm:"default:false"`
-	IsAdmin      bool          `json:"is_admin" gorm:"default:false"`
-	ReferralCode string        `json:"referral_code"`
-	BirthDate    string        `json:"birth_date"`
-	Address      []Address     `json:"addresses" gorm:"foreignKey:UserID"`
-	Preferences  []Preferences `json:"preferences" gorm:"foreignKey:UserID"`
+	ID           uint      `json:"id" gorm:"unique;not null"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email" validate:"email"`
+	Password     string    `json:"password" validate:"min=8,max=20"`
+	Phone        string    `json:"phone"`
+	Blocked      bool      `json:"blocked" gorm:"default:false"`
+	IsAdmin      bool      `json:"is_admin" gorm:"default:false"`
+	ReferralCode string    `json:"referral_code"`
+	BirthDate    string    `json:"birth_date"`
+	Address      []Address `json:"addresses" gorm:"foreignKey:UserID"`
 	traits.Timestampable
 }
 

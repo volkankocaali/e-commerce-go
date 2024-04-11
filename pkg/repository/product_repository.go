@@ -14,12 +14,24 @@ func NewProductRepository(DB *gorm.DB) interfaces.ProductRepository {
 	return &productDatabase{DB}
 }
 
-func (p *productDatabase) ListProduct(page int, perPage int) ([]models.ProductCategories, error) {
+func (p *productDatabase) ListProduct(page int, perPage int, productId *string) ([]models.ProductCategories, error) {
 	var productCategories []models.ProductCategories
+	q := p.DB
 
+	preLoad := []string{
+		"Product", "Categories", "Product.ProductTags.Tags",
+	}
+
+	for _, v := range preLoad {
+		q = q.Preload(v)
+	}
 	offset := (page - 1) * perPage
 
-	if err := p.DB.Preload("Product").Preload("Categories").Preload("Product.ProductTags.Tags").
+	if productId != nil {
+		q = q.Where("product_id = ?", *productId)
+	}
+
+	if err := q.
 		Offset(offset).Limit(perPage).
 		Find(&productCategories).Error; err != nil {
 		return []models.ProductCategories{}, err

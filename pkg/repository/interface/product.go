@@ -5,7 +5,7 @@ import (
 )
 
 type ProductRepository interface {
-	ListProduct(page int, perPage int) ([]models.ProductCategories, error)
+	ListProduct(page int, perPage int, productId *string) ([]models.ProductCategories, error)
 	Create(product models.Product) (models.Product, error)
 	CreateProductCategories(pc models.ProductCategories) (models.ProductCategories, error)
 }

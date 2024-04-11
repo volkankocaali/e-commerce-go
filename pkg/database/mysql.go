@@ -27,7 +27,6 @@ func NewMysqlDB(cfg config.Config) (*gorm.DB, error) {
 		models.Tags{},
 		models.Wallet{},
 		models.SlideShows{},
-		models.Preferences{},
 	)
 
 	if err != nil {

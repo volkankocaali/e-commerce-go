@@ -18,20 +18,32 @@ func NewProductHandler(usecase services.ProductUseCase) *ProductHandler {
 	}
 }
 
+func (p *ProductHandler) GetProduct(ctx *fiber.Ctx) error {
+	// get product id
+	productId := ctx.Params("id")
+
+	product, err := p.productUseCase.ListProduct(1, 1, &productId)
+
+	if err != nil {
+		res := response.ClientResponse(fiber.StatusBadRequest, product_constant.NotList, nil, err.Error(), 0)
+		return ctx.Status(res.StatusCode).JSON(res)
+	}
+
+	if len(product) == 0 {
+		res := response.ClientResponse(fiber.StatusBadRequest, product_constant.NotFound, nil, nil, 0)
+		return ctx.Status(res.StatusCode).JSON(res)
+	}
+
+	success := response.ClientResponse(fiber.StatusOK, product_constant.SuccessList, product[0], nil, len(product))
+	return ctx.Status(success.StatusCode).JSON(success)
+}
+
 func (p *ProductHandler) ListProduct(ctx *fiber.Ctx) error {
 	pageStr := ctx.Query("page", "1")
 	page, err := strconv.Atoi(pageStr)
 
 	perPageStr := ctx.Query("perPage", "10")
 	perPage, err := strconv.Atoi(perPageStr)
-
-	id := ctx.Locals("id")
-	userId, ok := id.(int)
-
-	if !ok {
-		res := response.ClientResponse(fiber.StatusBadRequest, product_constant.UserIdNotValid, nil, nil, 0)
-		return ctx.Status(res.StatusCode).JSON(res)
-	}
 
 	// page number control
 	if err != nil {
@@ -40,7 +52,7 @@ func (p *ProductHandler) ListProduct(ctx *fiber.Ctx) error {
 	}
 
 	// list products user case
-	products, err := p.productUseCase.ListProduct(page, perPage, userId)
+	products, err := p.productUseCase.ListProduct(page, perPage, nil)
 
 	if err != nil {
 		res := response.ClientResponse(fiber.StatusBadRequest, product_constant.NotList, nil, err.Error(), 0)
