@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2/log"
 )
 
-const DefaultActiveStatus = false
+const DefaultActiveStatus = true
 
 type Seeder interface {
 	Seed() error

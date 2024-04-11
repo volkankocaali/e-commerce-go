@@ -70,17 +70,14 @@ func (app *App) initFiber(cfg *config.Config) *fiber.App {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	// Alternatif olarak, özelleştirilmiş bir format ile log dosyasına loglama yapabilirsiniz
 	file, err := os.OpenFile("fiber_logs.json", os.O_RDWR|os.O_SYNC|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("Log dosyası açılamadı: %v", err)
 	}
 	app.LogFile = file
 
-	// slog için bir logger oluştur
 	logger := slog.New(slog.NewJSONHandler(file, nil))
 
-	// Fiber uygulamasına slog-fiber middleware'ini ekleyin
 	fiberApp.Use(slogfiber.New(logger))
 	fiberApp.Use(recover.New())
 
