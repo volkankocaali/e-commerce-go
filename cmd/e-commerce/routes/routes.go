@@ -49,10 +49,12 @@ func SetupRoutes(
 	// Usecase
 	userUseCase := usecase.NewUserUseCase(userRepository, walletRepository, cfg, h)
 	productUseCase := usecase.NewProductUseCase(productRepository, categoriesRepository, cfg, h, productParser)
+	categoriesUseCase := usecase.NewCategoriesUseCase(categoriesRepository, cfg, h)
 
 	// Handler
 	userHandler := handler.NewUserHandler(userUseCase)
 	productHandler := handler.NewProductHandler(productUseCase)
+	categoriesHandler := handler.NewCategoriesHandler(categoriesUseCase)
 
 	api := app.Group("/api")
 	v1 := api.Group("/v1")
@@ -75,6 +77,8 @@ func SetupRoutes(
 	// Category
 	// -- get category
 	// -- get category products
+
+	v1.Get("/categories", categoriesHandler.ListCategories)
 
 	// add to cart
 	// wishlist-add

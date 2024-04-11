@@ -30,3 +30,24 @@ func (c *categoriesDatabase) FindByProductIdCategories(productId []uint) ([]mode
 
 	return productCategories, nil
 }
+
+func (c *categoriesDatabase) ListCategories(page int, perPage int, categoriesId *string) ([]models.Categories, error) {
+	var categories []models.Categories
+	q := c.DB
+
+	q = q.Preload("Categories.Categories")
+
+	offset := (page - 1) * perPage
+
+	if categoriesId != nil {
+		q = q.Where("categories_id = ?", *categoriesId)
+	}
+
+	if err := q.
+		Offset(offset).Limit(perPage).
+		Find(&categories).Error; err != nil {
+		return []models.Categories{}, err
+	}
+
+	return categories, nil
+}
